@@ -1,6 +1,6 @@
-from sklearn.model_selection import KFold
 import pandas as pd
-from typing import Tuple
+from sklearn.model_selection import KFold
+from typing import Tuple, Optional
 
 
 def read_data(folder_path: str, dataset_path: str, group: Tuple[int, ...]) -> Tuple[pd.DataFrame, float]:
@@ -12,9 +12,12 @@ def read_data(folder_path: str, dataset_path: str, group: Tuple[int, ...]) -> Tu
     return data, ate
 
 
-def split_train_test(data: pd.DataFrame, n_splits: int, shuffle: bool = True):
-    kf = KFold(n_splits=n_splits, shuffle=shuffle)
+def split_train_test(data: pd.DataFrame, num_splits: int, shuffle: bool = True, limit: Optional[int] = None):
+    kf = KFold(n_splits=num_splits, shuffle=shuffle)
+
+    if limit is not None:
+        data = data.head(limit)
 
     for train_index, test_index in kf.split(data):
-        train_data, test_data = data[train_index], data[test_index]
+        train_data, test_data = data.iloc[train_index], data.iloc[test_index]
         yield train_data, test_data
