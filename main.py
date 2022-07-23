@@ -28,7 +28,7 @@ def main():
                 model.fit(train_data)
 
                 predictions = model.predict(test_data)
-                predicted_ate_values.append(model.calculate_ate(predictions))
+                predicted_ate_values.append(model.calculate_ate(test_data, predictions))
 
             predicted_ate_means.append(np.mean(predicted_ate_values))
             predicted_ate_stds.append(np.std(predicted_ate_values))
