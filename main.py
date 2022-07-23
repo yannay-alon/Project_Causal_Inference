@@ -9,6 +9,9 @@ def main():
     groups = [(1, 5), (2, 6), (3, 7), (4, 8)]
 
     data, ate = read_data(folder_path, dataset_path, groups[0])
+    num_features = 22
+    treatment_name = "A"
+    target_name = "Y"
 
     num_samples_values = [100, 200, 500, 700, 1000]
     num_splits = 5
@@ -21,8 +24,6 @@ def main():
         predicted_ate_stds = []
 
         for num_samples in num_samples_values:
-            model.reset()
-
             predicted_ate_values = []
             for train_data, test_data in split_train_test(data, num_splits, limit=num_samples):
                 model.fit(train_data)
@@ -33,7 +34,9 @@ def main():
             predicted_ate_means.append(np.mean(predicted_ate_values))
             predicted_ate_stds.append(np.std(predicted_ate_values))
 
-        plt.errorbar(predicted_ate_means, [ate] * len(num_samples_values), predicted_ate_stds, label=model_name)
+        plt.errorbar(num_samples_values, predicted_ate_means, yerr=predicted_ate_stds, label=model_name)
+
+    plt.plot(num_samples_values, [ate] * len(num_samples_values), label="True ATE", linestyle="dashed")
 
     plt.title("ATE v.s Num samples")
     plt.xlabel("Num samples")
