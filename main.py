@@ -21,6 +21,8 @@ def main():
         predicted_ate_stds = []
 
         for num_samples in num_samples_values:
+            model.reset()
+
             predicted_ate_values = []
             for train_data, test_data in split_train_test(data, num_splits, limit=num_samples):
                 model.fit(train_data)
