@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -16,5 +17,5 @@ class Model:
     def reset(self):
         raise NotImplementedError
 
-    def calculate_ate(self, predictions: pd.DataFrame):
+    def calculate_ate(self, data: pd.Datafrmae, predictions: np.ndarray):
         raise NotImplementedError
