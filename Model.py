@@ -12,3 +12,9 @@ class Model:
 
     def predict(self, data: pd.DataFrame):
         raise NotImplementedError
+
+    def reset(self):
+        raise NotImplementedError
+
+    def calculate_ate(self, predictions: pd.DataFrame):
+        raise NotImplementedError
