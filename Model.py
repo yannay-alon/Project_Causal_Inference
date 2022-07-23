@@ -8,7 +8,7 @@ class Model:
         self.treatment_name = treatment_feature_name
         self.target_name = target_feature_name
 
-    def fit(self, data: pd.Dataframe):
+    def fit(self, data: pd.DataFrame):
         raise NotImplementedError
 
     def predict(self, data: pd.DataFrame):
@@ -17,5 +17,5 @@ class Model:
     def reset(self):
         raise NotImplementedError
 
-    def calculate_ate(self, data: pd.Datafrmae, predictions: np.ndarray):
+    def calculate_ate(self, data: pd.DataFrame, predictions: np.ndarray):
         raise NotImplementedError

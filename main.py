@@ -2,6 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
+from IPW import IPW
+
 
 def main():
     folder_path = "TestDatasets_lowD"
@@ -14,7 +16,7 @@ def main():
     num_splits = 5
 
     # All models to test
-    models = {"model_name": ...}
+    models = {"IPW": IPW(22, "A", "Y")}
 
     for model_name, model in models.items():
         predicted_ate_means = []
@@ -31,7 +33,9 @@ def main():
             predicted_ate_means.append(np.mean(predicted_ate_values))
             predicted_ate_stds.append(np.std(predicted_ate_values))
 
-        plt.errorbar(predicted_ate_means, [ate] * len(num_samples_values), predicted_ate_stds, label=model_name)
+        plt.errorbar(num_samples_values, predicted_ate_means, yerr=predicted_ate_stds, label=model_name)
+
+    plt.plot(num_samples_values, [ate] * len(num_samples_values), label="True ATE", linestyle="dashed")
 
     plt.title("ATE v.s Num samples")
     plt.xlabel("Num samples")
