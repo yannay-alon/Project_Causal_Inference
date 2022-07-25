@@ -12,7 +12,7 @@ from sklearn.linear_model import LogisticRegression, LinearRegression
 from Model import Model
 
 
-class S_learner(Model):
+class SLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
                  interacted: bool = True, model=KernelRidge(kernel="poly", degree=3)):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
@@ -49,3 +49,18 @@ class S_learner(Model):
             features[[f"T_{column}" for column in features.columns]] = features.apply(lambda row: row * row['T'],
                                                                                       axis=1)
         return features
+
+
+    def doubly_robust(df, X, T, Y):
+        ps = LogisticRegression(max_iter=1e6).fit(df[X], df[T]).predict_proba(df[X])[:, 1]
+        mu0 = LinearRegression().fit(df.query(f"{T}==0")[X], df.query(f"{T}==0")[Y]).predict(df[X])
+        mu1 = LinearRegression().fit(df.query(f"{T}==1")[X], df.query(f"{T}==1")[Y]).predict(df[X])
+        treatment_mask = df[T] == 1
+        return (
+                np.mean(
+                    df[treatment_mask][T] * (df[treatment_mask][Y] - mu1[treatment_mask]) / ps[treatment_mask] + mu1[
+                        treatment_mask])
+                - np.mean(
+            (1 - df[treatment_mask][T]) * (df[treatment_mask][Y] - mu0[treatment_mask]) / (1 - ps[treatment_mask]) +
+            mu0[treatment_mask])
+        )
