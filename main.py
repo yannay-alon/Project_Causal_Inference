@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
-from IPW import IPW
+from IPW import *
 
 
 def main():
@@ -11,12 +11,18 @@ def main():
     groups = [(1, 5), (2, 6), (3, 7), (4, 8)]
 
     data, ate = read_data(folder_path, dataset_path, groups[0])
+    num_features = 22
+    treatment_name = "A"
+    target_name = "Y"
 
-    num_samples_values = [100, 200, 500, 700, 1000]
+    num_samples_values = [200, 300, 400, 500, 600, 700, 800, 900, 1000]
     num_splits = 5
 
     # All models to test
-    models = {"IPW": IPW(22, "A", "Y")}
+    models = {
+        "IPW": IPW(num_features, treatment_name, target_name),
+        "Baseline IPW": BaselineIPW(num_features, treatment_name, target_name)
+    }
 
     for model_name, model in models.items():
         predicted_ate_means = []
