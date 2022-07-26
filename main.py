@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
 from IPW import *
+from XLearner import *
 
 
 def main():
@@ -20,8 +21,11 @@ def main():
 
     # All models to test
     models = {
-        "IPW": IPW(num_features, treatment_name, target_name),
-        "Baseline IPW": BaselineIPW(num_features, treatment_name, target_name)
+        # "IPW": IPW(num_features, treatment_name, target_name),
+        "Baseline IPW": BaselineIPW(num_features, treatment_name, target_name),
+
+        "X-Learner": XLearner(num_features, treatment_name, target_name),
+        "Baseline X-Learner": BaselineXLearner(num_features, treatment_name, target_name),
     }
 
     for model_name, model in models.items():
