@@ -2,6 +2,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
+from IPW import *
+
 
 def main():
     folder_path = "TestDatasets_lowD"
@@ -13,11 +15,14 @@ def main():
     treatment_name = "A"
     target_name = "Y"
 
-    num_samples_values = [100, 200, 500, 700, 1000]
+    num_samples_values = [200, 300, 400, 500, 600, 700, 800, 900, 1000]
     num_splits = 5
 
     # All models to test
-    models = {"model_name": ...}
+    models = {
+        "IPW": IPW(num_features, treatment_name, target_name),
+        "Baseline IPW": BaselineIPW(num_features, treatment_name, target_name)
+    }
 
     for model_name, model in models.items():
         predicted_ate_means = []
