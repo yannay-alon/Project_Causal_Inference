@@ -1,31 +1,32 @@
-import numpy as np
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
-from IPW import *
-from XLearner import *
+from Models.IPW import *
+from Models.DoublyRobust import *
+from Models.XLearner import *
+from Models.SLearner import *
+from Models.TLearner import *
+from Models.Matching import *
 
 
 def main():
     folder_path = "TestDatasets_lowD"
     dataset_path = "testdataset"
-    groups = [(1, 5), (2, 6), (3, 7), (4, 8)]
+    binary_groups = [(1, 5), (4, 8)]
+    continuous_groups = [(2, 6), (3, 7)]
 
-    data, ate = read_data(folder_path, dataset_path, groups[0])
+    data, ate = read_data(folder_path, dataset_path, binary_groups[1])
     num_features = 22
     treatment_name = "A"
     target_name = "Y"
 
-    num_samples_values = [200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    num_splits = 5
+    num_samples_values = [num for num in range(200, 1001, 100)]
+    num_splits = 10
 
     # All models to test
+    model_types = [IPW, BaselineIPW, XLearner, BaselineXLearner, DoublyRobust, SLearner, TLearner, Matching]
     models = {
-        # "IPW": IPW(num_features, treatment_name, target_name),
-        "Baseline IPW": BaselineIPW(num_features, treatment_name, target_name),
-
-        "X-Learner": XLearner(num_features, treatment_name, target_name),
-        "Baseline X-Learner": BaselineXLearner(num_features, treatment_name, target_name),
+        model.__name__: model(num_features, treatment_name, target_name) for model in model_types
     }
 
     for model_name, model in models.items():
@@ -38,11 +39,10 @@ def main():
                 model.reset()
                 model.fit(train_data)
 
-                predictions = model.predict(test_data)
-                predicted_ate_values.append(model.calculate_ate(test_data, predictions))
+                predicted_ate_values.append(model.calculate_ate(test_data))
 
             predicted_ate_means.append(np.mean(predicted_ate_values))
-            predicted_ate_stds.append(np.std(predicted_ate_values))
+            predicted_ate_stds.append(np.std(predicted_ate_values) / 10)
 
         plt.errorbar(num_samples_values, predicted_ate_means, yerr=predicted_ate_stds, label=model_name)
 

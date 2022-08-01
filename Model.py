@@ -11,11 +11,8 @@ class Model:
     def fit(self, data: pd.DataFrame):
         raise NotImplementedError
 
-    def predict(self, data: pd.DataFrame):
-        raise NotImplementedError
-
     def reset(self):
         raise NotImplementedError
 
-    def calculate_ate(self, data: pd.DataFrame, predictions: np.ndarray):
+    def calculate_ate(self, data: pd.DataFrame):
         raise NotImplementedError

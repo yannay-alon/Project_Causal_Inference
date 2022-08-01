@@ -17,24 +17,23 @@ class TLearner(Model):
         self.treated_model.fit(X_treated, y_treated)
         self.untreated_model.fit(X_untreated, y_untreated)
 
-    def predict(self, data: pd.DataFrame):
-        X_treated, _, _, _ = self.preprocess_data(data)
-        return self.treated_model.predict(X_treated), self.untreated_model.predict(X_treated)
-
     def reset(self):
         self.treated_model = LinearRegression()
         self.untreated_model = LinearRegression()
 
-    def calculate_ate(self, data: pd.DataFrame, treated_predictions: np.ndarray, untreated_predictions: np.ndarray):
+    def calculate_ate(self, data: pd.DataFrame):
+        X_treated, _, _, _ = self.preprocess_data(data)
+        treated_predictions = self.treated_model.predict(X_treated)
+        untreated_predictions = self.untreated_model.predict(X_treated)
         return 1 / len(treated_predictions) * sum(treated_predictions - untreated_predictions)
 
     def preprocess_data(self, data: pd.DataFrame):
-        data_t_1 = data[data['T'] == 1]
-        X_treated = data_t_1.filter(regex=("x_*"))
-        y_treated = data_t_1['Y']
+        data_t_1 = data[data[self.treatment_name] == 1]
+        X_treated = data_t_1.drop(columns=[self.treatment_name, self.target_name])
+        y_treated = data_t_1[self.target_name]
 
-        data_t_0 = data[data['T'] == 0]
-        X_untreated = data_t_0.filter(regex=("x_*"))
-        y_untreated = data_t_0['Y']
+        data_t_0 = data[data[self.treatment_name] == 0]
+        X_untreated = data_t_0.drop(columns=[self.treatment_name, self.target_name])
+        y_untreated = data_t_0[self.target_name]
 
         return X_treated, y_treated, X_untreated, y_untreated
