@@ -1,41 +1,38 @@
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
-from SLearner import SLearner
-from DoublyRobust import DoublyRobust
+
+from Models import *
 
 
-def main():
-    folder_path = "TestDatasets_lowD"
-    dataset_path = "testdataset"
-    groups = [(1, 5), (2, 6), (3, 7), (4, 8)]
-
-    data, ate = read_data(folder_path, dataset_path, groups[0])
-    num_features = 22
-    treatment_name = "A"
-    target_name = "Y"
-
-    num_samples_values = [100, 200, 500, 700, 1000]
-    num_splits = 5
+def run_models(data: pd.DataFrame, ate: float,
+               num_features: int, treatment_name: str, target_name: str):
+    num_samples_values = [num for num in range(200, 1001, 100)]
+    num_splits = 10
 
     # All models to test
-    models = {"model_name": DoublyRobust(num_features, treatment_name, target_name)}
+    model_types = [IPW, BaselineIPW, XLearner, BaselineXLearner, DoublyRobust, SLearner, TLearner, Matching]
+    models = {
+        model.__name__: model(num_features, treatment_name, target_name) for model in model_types
+    }
 
     for model_name, model in models.items():
+        print(f"Model: {model_name}")
         predicted_ate_means = []
         predicted_ate_stds = []
 
         for num_samples in num_samples_values:
+            print(f"\t#Samples: {num_samples}")
             predicted_ate_values = []
             for train_data, test_data in split_train_test(data, num_splits, limit=num_samples):
                 model.reset()
                 model.fit(train_data)
 
-                predictions = model.predict(test_data)
-                predicted_ate_values.append(model.calculate_ate(test_data, predictions))
+                predicted_ate_values.append(model.calculate_ate(test_data))
 
             predicted_ate_means.append(np.mean(predicted_ate_values))
-            predicted_ate_stds.append(np.std(predicted_ate_values))
+            predicted_ate_stds.append(np.std(predicted_ate_values) / 10)
 
         plt.errorbar(num_samples_values, predicted_ate_means, yerr=predicted_ate_stds, label=model_name)
 
@@ -46,6 +43,21 @@ def main():
     plt.ylabel("ATE")
     plt.legend()
     plt.show()
+
+
+def main():
+    folder_path = "TestDatasets_lowD"
+    dataset_path = "testdataset"
+    binary_groups = [(1, 5), (4, 8)]
+    continuous_groups = [(2, 6), (3, 7)]
+
+    data, ate = read_data(folder_path, dataset_path, binary_groups[1])
+
+    num_features = len(data.columns) - 2
+    treatment_name = "A"
+    target_name = "Y"
+
+    run_models(data, ate, num_features, treatment_name, target_name)
 
 
 if __name__ == '__main__':

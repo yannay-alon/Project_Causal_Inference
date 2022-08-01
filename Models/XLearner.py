@@ -38,10 +38,6 @@ class XLearner(Model):
         for index, treatment_mask in enumerate(treatment_masks):
             self.second_stage[index].fit(features[treatment_mask], imputed_treatment_effects[treatment_mask])
 
-    def predict(self, data: pd.DataFrame):
-        features = data.drop(columns=[self.treatment_name, self.target_name])
-        return self.propensity_model.predict_proba(features)[:, 1]
-
     def reset(self):
         self.first_stage = [
             GradientBoostingClassifier(max_depth=2),
@@ -55,12 +51,12 @@ class XLearner(Model):
             GradientBoostingRegressor(max_depth=2)
         ]
 
-    def calculate_ate(self, data: pd.DataFrame, predictions: np.ndarray):
+    def calculate_ate(self, data: pd.DataFrame):
         features = data.drop(columns=[self.treatment_name, self.target_name])
 
-        propensity_scores = predictions
+        predictions_scores = self.propensity_model.predict_proba(features)
         predictions = [self.second_stage[index].predict(features) for index in range(len(self.treatment_values))]
-        return np.mean(propensity_scores * predictions[0] + (1 - propensity_scores) * predictions[1]).item()
+        return np.mean(predictions_scores[:, 1] * predictions[0] + predictions_scores[:, 0] * predictions[1]).item()
 
 
 class BaselineXLearner(Model):
@@ -74,10 +70,6 @@ class BaselineXLearner(Model):
         features = data.drop(columns=[self.treatment_name, self.target_name])
         self.model.fit(features, data[self.treatment_name], data[self.target_name])
 
-    def predict(self, data: pd.DataFrame):
-        features = data.drop(columns=[self.treatment_name, self.target_name])
-        return self.model.treatment_model.predict_proba(features)[:, 1]
-
     def reset(self):
         self.model = Test_XLearner(
             outcome_model=StratifiedStandardization(GradientBoostingRegressor()),
@@ -85,6 +77,6 @@ class BaselineXLearner(Model):
             effect_types="diff"
         )
 
-    def calculate_ate(self, data: pd.DataFrame, predictions: np.ndarray):
+    def calculate_ate(self, data: pd.DataFrame):
         features = data.drop(columns=[self.treatment_name, self.target_name])
         return self.model.estimate_effect(features, data[self.treatment_name], agg="population").item()

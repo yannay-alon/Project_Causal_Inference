@@ -17,14 +17,10 @@ class SLearner(Model):
         original_features = data.drop(columns=[self.target_name])
         self.model.fit(self.__re_calculate_features(original_features), results)
 
-    def predict(self, data: pd.DataFrame):
-        original_features = data.drop(columns=[self.target_name])
-        return self.model.predict(self.__re_calculate_features(original_features))
-
     def reset(self):
         self.model = sklearn.base.clone(self.model)
 
-    def calculate_ate(self, data: pd.DataFrame, predictions: np.ndarray):
+    def calculate_ate(self, data: pd.DataFrame):
         original_features = data.drop(columns=[self.target_name])
 
         predictions_1 = self.model.predict(self.__re_calculate_features(original_features, force_treatment_value=1))
