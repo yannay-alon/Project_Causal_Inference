@@ -1,21 +1,13 @@
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
 from Models import *
 
 
-def main():
-    folder_path = "TestDatasets_lowD"
-    dataset_path = "testdataset"
-    binary_groups = [(1, 5), (4, 8)]
-    continuous_groups = [(2, 6), (3, 7)]
-
-    data, ate = read_data(folder_path, dataset_path, binary_groups[1])
-    num_features = 22
-    treatment_name = "A"
-    target_name = "Y"
-
+def run_models(data: pd.DataFrame, ate: float,
+               num_features: int, treatment_name: str, target_name: str):
     num_samples_values = [num for num in range(200, 1001, 100)]
     num_splits = 10
 
@@ -51,6 +43,21 @@ def main():
     plt.ylabel("ATE")
     plt.legend()
     plt.show()
+
+
+def main():
+    folder_path = "TestDatasets_lowD"
+    dataset_path = "testdataset"
+    binary_groups = [(1, 5), (4, 8)]
+    continuous_groups = [(2, 6), (3, 7)]
+
+    data, ate = read_data(folder_path, dataset_path, binary_groups[1])
+
+    num_features = len(data.columns) - 2
+    treatment_name = "A"
+    target_name = "Y"
+
+    run_models(data, ate, num_features, treatment_name, target_name)
 
 
 if __name__ == '__main__':
