@@ -1,12 +1,8 @@
+import numpy as np
 from matplotlib import pyplot as plt
 from Data import read_data, split_train_test
 
-from Models.IPW import *
-from Models.DoublyRobust import *
-from Models.XLearner import *
-from Models.SLearner import *
-from Models.TLearner import *
-from Models.Matching import *
+from Models import *
 
 
 def main():
@@ -30,10 +26,12 @@ def main():
     }
 
     for model_name, model in models.items():
+        print(f"Model: {model_name}")
         predicted_ate_means = []
         predicted_ate_stds = []
 
         for num_samples in num_samples_values:
+            print(f"\t#Samples: {num_samples}")
             predicted_ate_values = []
             for train_data, test_data in split_train_test(data, num_splits, limit=num_samples):
                 model.reset()
