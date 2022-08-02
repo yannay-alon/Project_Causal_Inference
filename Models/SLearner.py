@@ -3,6 +3,8 @@ import numpy as np
 import sklearn.base
 from sklearn.kernel_ridge import KernelRidge
 from Model import Model
+from econml.metalearners import SLearner as Test_SLearner
+from sklearn.ensemble import GradientBoostingRegressor
 
 
 class SLearner(Model):
@@ -36,3 +38,22 @@ class SLearner(Model):
             features[[f"{self.treatment_name}_{column}" for column in features.columns]] = features.apply(
                 lambda row: row * row[self.treatment_name], axis=1)
         return features
+
+
+class BaselineSLearner(Model):
+    def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
+        super(BaselineSLearner, self).__init__(num_features, treatment_feature_name, target_feature_name)
+
+        self.model: Test_SLearner = None
+        self.reset()
+
+    def fit(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        self.model.fit(X=features, T=data[self.treatment_name], Y=data[self.target_name])
+
+    def reset(self):
+        self.model = Test_SLearner(overall_model=GradientBoostingRegressor())
+
+    def calculate_ate(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        return np.mean(self.model.effect(features))

@@ -55,4 +55,4 @@ class BaselineIPW(Model):
         results = data[self.target_name]
 
         potential_outcomes = self.model.estimate_population_outcome(features, treatments, results)
-        return self.model.estimate_effect(potential_outcomes[1], potential_outcomes[0])
+        return self.model.estimate_effect(potential_outcomes[1], potential_outcomes[0]).item()

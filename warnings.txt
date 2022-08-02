@@ -1,0 +1,6 @@
+Model: BaselineXLearner
+Feature names only support names that are all strings. Got feature names with dtypes: ['int', 'str']. An error will be raised in 1.2.
+X does not have valid feature names, but GradientBoostingRegressor was fitted with feature names
+
+Model: BaselineSLearner
+Function get_feature_names is deprecated; get_feature_names is deprecated in 1.0 and will be removed in 1.2. Please use get_feature_names_out instead.

@@ -3,6 +3,8 @@ import numpy as np
 import sklearn.base
 from sklearn.linear_model import LogisticRegression
 from Model import Model
+from causallib.estimation import PropensityFeatureStandardization, StratifiedStandardization, OverlapWeights
+from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
 
 
 class DoublyRobust(Model):
@@ -39,3 +41,26 @@ class DoublyRobust(Model):
         treated_effect = np.mean(data[t] * (data[y] - mu1) / ps[:, 1] + mu1)
         control_effect = np.mean((1 - data[t]) * (data[y] - mu0) / ps[:, 0] + mu0)
         return treated_effect - control_effect
+
+
+class BaselineDoublyRobust(Model):
+    def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
+        super(BaselineDoublyRobust, self).__init__(num_features, treatment_feature_name, target_feature_name)
+
+        self.model: PropensityFeatureStandardization = None
+        self.reset()
+
+    def fit(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        self.model.fit(features, data[self.treatment_name], data[self.target_name])
+
+    def reset(self):
+        self.model = PropensityFeatureStandardization(
+            outcome_model=StratifiedStandardization(GradientBoostingRegressor()),
+            weight_model=OverlapWeights(GradientBoostingClassifier())
+        )
+
+    def calculate_ate(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        treatment_outcomes = self.model.estimate_population_outcome(X=features, a=data[self.treatment_name])
+        return treatment_outcomes[1] - treatment_outcomes[0]
