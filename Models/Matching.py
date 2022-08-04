@@ -52,5 +52,6 @@ class BaselineMatching(Model):
         )
 
     def calculate_ate(self, data: pd.DataFrame):
-        raise NotImplementedError
-
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        individual_outcome = self.model.estimate_individual_outcome(features, data[self.treatment_name])
+        return np.mean(individual_outcome[1] - individual_outcome[0])
