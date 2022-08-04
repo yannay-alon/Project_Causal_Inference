@@ -14,12 +14,12 @@ def run_models(data: pd.DataFrame, ate: float,
 
     # All models to test
     model_types = [
-        IPW, BaselineIPW,
-        XLearner, BaselineXLearner,
-        DoublyRobust,
-        SLearner,
-        TLearner,
-        Matching
+        # IPW, BaselineIPW,
+        # XLearner, BaselineXLearner,
+        # DoublyRobust, BaselineDoublyRobust
+        # SLearner, BaselineSLearner
+        # TLearner, BaselineTLearner
+        Matching, BaselineMatching
     ]
 
     models = {

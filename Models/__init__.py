@@ -8,8 +8,8 @@ from Models.XLearner import XLearner, BaselineXLearner
 __all__ = [
     "DoublyRobust", "BaselineDoublyRobust",
     "IPW", "BaselineIPW",
-    "Matching",
+    "Matching", "BaselineMatching",
     "SLearner", "BaselineSLearner",
-    "TLearner",
+    "TLearner", "BaselineTLearner",
     "XLearner", "BaselineXLearner"
 ]
