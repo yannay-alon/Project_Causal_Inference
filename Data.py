@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 from typing import Tuple, Optional
 
 
@@ -12,12 +12,12 @@ def read_data(folder_path: str, dataset_path: str, group: Tuple[int, ...]) -> Tu
     return data, ate
 
 
-def split_train_test(data: pd.DataFrame, num_splits: int, shuffle: bool = True, limit: Optional[int] = None):
-    kf = KFold(n_splits=num_splits, shuffle=shuffle)
+def split_train_test(data: pd.DataFrame, target_name: str, num_splits: int, limit: Optional[int] = None):
+    kf = StratifiedKFold(n_splits=num_splits)
 
     if limit is not None:
         data = data.head(limit)
 
-    for train_index, test_index in kf.split(data):
+    for train_index, test_index in kf.split(data, data[target_name]):
         train_data, test_data = data.iloc[train_index], data.iloc[test_index]
         yield train_data, test_data
