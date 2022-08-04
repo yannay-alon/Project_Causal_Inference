@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from Model import Model
 from sklearn.linear_model import LinearRegression
+from econml.metalearners import TLearner as Test_TLearner
+from sklearn.ensemble import GradientBoostingRegressor
 
 
 class TLearner(Model):
@@ -37,3 +39,23 @@ class TLearner(Model):
         y_untreated = data_t_0[self.target_name]
 
         return X_treated, y_treated, X_untreated, y_untreated
+
+
+class BaselineTLearner(Model):
+
+    def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
+        super(BaselineTLearner, self).__init__(num_features, treatment_feature_name, target_feature_name)
+
+        self.model: Test_TLearner = None
+        self.reset()
+
+    def fit(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        self.model.fit(X=features, T=data[self.treatment_name], Y=data[self.target_name])
+
+    def reset(self):
+        self.model = Test_TLearner(models=GradientBoostingRegressor())
+
+    def calculate_ate(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        return np.mean(self.model.effect(features))

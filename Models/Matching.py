@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from Model import Model
+from causallib.estimation import Matching as Test_Matching
 from sklearn.neighbors import KNeighborsRegressor
 
 
@@ -32,3 +33,24 @@ class Matching(Model):
         y_untreated = data_t_0[self.target_name]
 
         return X_treated, y_treated, X_untreated, y_untreated
+
+
+class BaselineMatching(Model):
+    def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
+        super(BaselineMatching, self).__init__(num_features, treatment_feature_name, target_feature_name)
+        self.model: Matching = None
+        self.reset()
+
+    def fit(self, data: pd.DataFrame):
+        features = data.drop(columns=[self.treatment_name, self.target_name])
+        self.model.fit(features, data[self.treatment_name], data[self.target_name])
+
+    def reset(self):
+        self.model = Test_Matching(
+            knn_backend="sklearn",
+            n_neighbors=1
+        )
+
+    def calculate_ate(self, data: pd.DataFrame):
+        raise NotImplementedError
+
