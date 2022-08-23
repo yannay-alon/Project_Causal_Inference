@@ -6,19 +6,21 @@ from Data import read_data, split_train_test
 
 from Models import *
 
+np.seterr(all='raise')
+
 
 def run_models(data: pd.DataFrame, ate: float,
                num_features: int, treatment_name: str, target_name: str):
-    num_samples_values = [num for num in range(300, 1001, 100)]
-    num_splits = 20
+    num_samples_values = [num for num in range(300, len(data) + 1, 200)]
+    num_splits = 5
 
     # All models to test
     model_types = [
-        # IPW, BaselineIPW,
-        # XLearner, BaselineXLearner,
-        # DoublyRobust, BaselineDoublyRobust
-        # SLearner, BaselineSLearner
-        # TLearner, BaselineTLearner
+        IPW, BaselineIPW,
+        XLearner, BaselineXLearner,
+        DoublyRobust, BaselineDoublyRobust,
+        SLearner, BaselineSLearner,
+        TLearner, BaselineTLearner,
         Matching, BaselineMatching
     ]
 
@@ -50,15 +52,25 @@ def run_models(data: pd.DataFrame, ate: float,
     plt.title("ATE v.s Num samples")
     plt.xlabel("Num samples")
     plt.ylabel("ATE")
-    plt.legend()
+    plt.legend(bbox_to_anchor=(0, -5, 5, 10), loc="lower left", mode="expand")
     plt.show()
 
 
 def main():
-    folder_path = "TestDatasets_lowD"
+    np.random.seed(42)
+
+    dimension = "high"
+
+    if dimension == "low":
+        folder_path = "TestDatasets_lowD"
+        binary_groups = [(1, 5), (4, 8)]
+        continuous_groups = [(2, 6), (3, 7)]
+    else:
+        folder_path = "TestDatasets_highD"
+        binary_groups = [(1,), (2,), (5,), (6,)]
+        continuous_groups = [(3,), (4,), (7,), (8,)]
+
     dataset_path = "testdataset"
-    binary_groups = [(1, 5), (4, 8)]
-    continuous_groups = [(2, 6), (3, 7)]
 
     data, ate = read_data(folder_path, dataset_path, binary_groups[1])
 

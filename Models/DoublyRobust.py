@@ -1,16 +1,16 @@
 import pandas as pd
 import numpy as np
 import sklearn.base
-from sklearn.linear_model import LogisticRegression
 from Model import Model
 from causallib.estimation import PropensityFeatureStandardization, StratifiedStandardization, OverlapWeights
-from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingClassifier
 
 
 class DoublyRobust(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
-                 propensity_model=LogisticRegression(max_iter=1e6),
-                 treated_model=LogisticRegression(max_iter=1e6), controlled_model=LogisticRegression(max_iter=1e6)):
+                 propensity_model=GradientBoostingClassifier(),
+                 treated_model=GradientBoostingClassifier(),
+                 controlled_model=GradientBoostingClassifier()):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.propensity_model = propensity_model
         self.treated_model = treated_model
@@ -56,7 +56,7 @@ class BaselineDoublyRobust(Model):
 
     def reset(self):
         self.model = PropensityFeatureStandardization(
-            outcome_model=StratifiedStandardization(GradientBoostingRegressor()),
+            outcome_model=StratifiedStandardization(GradientBoostingClassifier()),
             weight_model=OverlapWeights(GradientBoostingClassifier())
         )
 

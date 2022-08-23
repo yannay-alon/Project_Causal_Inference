@@ -38,7 +38,7 @@ class Matching(Model):
 class BaselineMatching(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
         super(BaselineMatching, self).__init__(num_features, treatment_feature_name, target_feature_name)
-        self.model: Matching = None
+        self.model: Test_Matching = None
         self.reset()
 
     def fit(self, data: pd.DataFrame):
@@ -47,6 +47,7 @@ class BaselineMatching(Model):
 
     def reset(self):
         self.model = Test_Matching(
+            metric="euclidean",
             knn_backend="sklearn",
             n_neighbors=1
         )

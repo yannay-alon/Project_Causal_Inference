@@ -3,7 +3,6 @@ import pandas as pd
 import sklearn.base
 from causallib.estimation import IPW as BASELINE_IPW
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.linear_model import LogisticRegression
 
 from Model import Model
 
@@ -12,7 +11,7 @@ class IPW(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
         super(IPW, self).__init__(num_features, treatment_feature_name, target_feature_name)
 
-        self.model = LogisticRegression()
+        self.model = GradientBoostingClassifier()
 
         self.reset()
 
