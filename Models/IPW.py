@@ -27,7 +27,7 @@ class IPW(Model):
         features = data.drop(columns=[self.treatment_name, self.target_name])
         predictions = self.model.predict_proba(features)
         weights = (data[self.treatment_name] - predictions[:, 1]) / (predictions[:, 1] * predictions[:, 0])
-        return np.mean(weights * data[self.target_name]).item()
+        return np.mean(weights * data[self.target_name])
 
 
 class BaselineIPW(Model):

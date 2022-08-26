@@ -12,6 +12,7 @@ np.seterr(all='raise')
 def run_models(data: pd.DataFrame, ate: float,
                num_features: int, treatment_name: str, target_name: str):
     num_samples_values = [num for num in range(300, len(data) + 1, 200)]
+    num_samples_values = [100]
     num_splits = 5
 
     # All models to test
@@ -27,7 +28,6 @@ def run_models(data: pd.DataFrame, ate: float,
     models = {
         model.__name__: model(num_features, treatment_name, target_name) for model in model_types
     }
-
     for model_name, model in models.items():
         print(f"Model: {model_name}")
         predicted_ate_means = []
@@ -44,7 +44,8 @@ def run_models(data: pd.DataFrame, ate: float,
 
             predicted_ate_means.append(np.mean(predicted_ate_values))
             predicted_ate_stds.append(np.std(predicted_ate_values))
-
+        np.save(f"results/{model_name}_predicted_ate_means.npy", predicted_ate_means)
+        np.save(f"results/{model_name}_predicted_ate_stds.npy", predicted_ate_stds)
         plt.errorbar(num_samples_values, predicted_ate_means, yerr=predicted_ate_stds, label=model_name)
 
     plt.plot(num_samples_values, [ate] * len(num_samples_values), label="True ATE", linestyle="dashed")
@@ -52,7 +53,8 @@ def run_models(data: pd.DataFrame, ate: float,
     plt.title("ATE v.s Num samples")
     plt.xlabel("Num samples")
     plt.ylabel("ATE")
-    plt.legend(bbox_to_anchor=(0, -5, 5, 10), loc="lower left", mode="expand")
+    plt.legend(bbox_to_anchor=(0, -0.6, 1, 1), loc="lower left", mode="expand", ncol=3)
+    plt.tight_layout()
     plt.show()
 
 
