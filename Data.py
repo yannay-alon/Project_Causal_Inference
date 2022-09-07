@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import RepeatedStratifiedKFold
 from typing import Tuple, Optional
 
 
@@ -12,8 +12,9 @@ def read_data(folder_path: str, dataset_path: str, group: Tuple[int, ...]) -> Tu
     return data, ate
 
 
-def split_train_test(data: pd.DataFrame, target_name: str, num_splits: int, limit: Optional[int] = None):
-    kf = StratifiedKFold(n_splits=num_splits)
+def split_train_test(data: pd.DataFrame, target_name: str, num_splits: int, num_repetitions: int,
+                     limit: Optional[int] = None):
+    kf = RepeatedStratifiedKFold(n_splits=num_splits, n_repeats=num_repetitions)
 
     if limit is not None:
         data = data.head(limit)
