@@ -9,7 +9,7 @@ def main():
         IPW,
         XLearner,
         DoublyRobust,
-        # SLearner,
+        SLearner,
         TLearner,
         Matching
     ]
@@ -18,7 +18,7 @@ def main():
         BaselineIPW,
         BaselineXLearner,
         BaselineDoublyRobust,
-        # BaselineSLearner,
+        BaselineSLearner,
         BaselineTLearner,
         BaselineMatching
     ]
@@ -34,11 +34,11 @@ def main():
     lines = []
     legends = []
     for model_name, baseline_name in zip(model_names, baseline_names):
-        model_means = np.load(f"{folder}/{model_name}_predicted_ate_means.npy")[2:]
-        model_stds = np.load(f"{folder}/{model_name}_predicted_ate_stds.npy")[2:]
+        model_means = np.load(f"{folder}/{model_name}_predicted_ate_means.npy")[-len(num_samples_values):]
+        model_stds = np.load(f"{folder}/{model_name}_predicted_ate_stds.npy")[-len(num_samples_values):]
 
-        baseline_means = np.load(f"{folder}/{baseline_name}_predicted_ate_means.npy")[2:]
-        baseline_stds = np.load(f"{folder}/{baseline_name}_predicted_ate_stds.npy")[2:]
+        baseline_means = np.load(f"{folder}/{baseline_name}_predicted_ate_means.npy")[-len(num_samples_values):]
+        baseline_stds = np.load(f"{folder}/{baseline_name}_predicted_ate_stds.npy")[-len(num_samples_values):]
 
         line = plt.errorbar(num_samples_values, model_means, yerr=model_stds)[0]
         plt.errorbar(num_samples_values, baseline_means, yerr=baseline_stds,
@@ -46,7 +46,7 @@ def main():
         lines.append(line)
         legends.append(model_name)
 
-    real_ate = np.load(f"{folder}/real_ate.npy")[2:]
+    real_ate = np.load(f"{folder}/real_ate.npy")[-len(num_samples_values):]
 
     lines.append(plt.plot(num_samples_values, real_ate, linestyle="dotted")[0])
     legends.append("True ATE")
@@ -62,11 +62,11 @@ def main():
     legend_figure.show()
 
     for model_name, baseline_name in zip(model_names, baseline_names):
-        model_means = np.load(f"{folder}/{model_name}_bias_means.npy")[2:]
-        model_stds = np.load(f"{folder}/{model_name}_bias_stds.npy")[2:]
+        model_means = np.load(f"{folder}/{model_name}_bias_means.npy")[-len(num_samples_values):]
+        model_stds = np.load(f"{folder}/{model_name}_bias_stds.npy")[-len(num_samples_values):]
 
-        baseline_means = np.load(f"{folder}/{baseline_name}_bias_means.npy")[2:]
-        baseline_stds = np.load(f"{folder}/{baseline_name}_bias_stds.npy")[2:]
+        baseline_means = np.load(f"{folder}/{baseline_name}_bias_means.npy")[-len(num_samples_values):]
+        baseline_stds = np.load(f"{folder}/{baseline_name}_bias_stds.npy")[-len(num_samples_values):]
 
         line = plt.errorbar(num_samples_values, model_means, yerr=model_stds)[0]
         plt.errorbar(num_samples_values, baseline_means, yerr=baseline_stds,

@@ -9,7 +9,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 class SLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
-                 interacted: bool = True, model=KernelRidge(kernel="poly", degree=3)):
+                 interacted: bool = True, model=GradientBoostingRegressor()):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.model = model
         self.interacted = interacted

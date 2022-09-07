@@ -11,7 +11,7 @@ np.seterr(all='raise')
 
 def run_models(data: pd.DataFrame, ate: float,
                num_features: int, treatment_name: str, target_name: str):
-    num_samples_values = [num for num in range(300, len(data) + 1, 200)]
+    num_samples_values = [num for num in range(700, len(data) + 1, 200)]
     num_splits = 8
     num_repetitions = 10
 
@@ -21,21 +21,21 @@ def run_models(data: pd.DataFrame, ate: float,
 
     # All models to test
     model_types = [
-        IPW,
-        XLearner,
-        DoublyRobust,
+        # IPW,
+        # XLearner,
+        # DoublyRobust,
         SLearner,
         TLearner,
-        Matching
+        # Matching
     ]
 
     baseline_types = [
-        BaselineIPW,
-        BaselineXLearner,
-        BaselineDoublyRobust,
+        # BaselineIPW,
+        # BaselineXLearner,
+        # BaselineDoublyRobust,
         BaselineSLearner,
         BaselineTLearner,
-        BaselineMatching
+        # BaselineMatching
     ]
 
     models = {

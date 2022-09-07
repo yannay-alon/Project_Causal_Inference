@@ -8,7 +8,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 class TLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
-                 treated_model=LinearRegression(), untreated_model=LinearRegression()):
+                 treated_model=GradientBoostingRegressor(), untreated_model=GradientBoostingRegressor()):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.treated_model = treated_model
         self.untreated_model = untreated_model
@@ -20,8 +20,8 @@ class TLearner(Model):
         self.untreated_model.fit(X_untreated, y_untreated)
 
     def reset(self):
-        self.treated_model = LinearRegression()
-        self.untreated_model = LinearRegression()
+        self.treated_model = GradientBoostingRegressor()
+        self.untreated_model = GradientBoostingRegressor()
 
     def calculate_ate(self, data: pd.DataFrame):
         X_treated, _, _, _ = self.preprocess_data(data)
