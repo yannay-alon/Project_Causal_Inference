@@ -7,7 +7,7 @@ from sklearn.neighbors import KNeighborsRegressor
 
 class Matching(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
-                 model=KNeighborsRegressor(n_neighbors=1, metric='mahalanobis')):
+                 model=KNeighborsRegressor(n_neighbors=1)):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.model = model
 
@@ -16,7 +16,7 @@ class Matching(Model):
         self.model.fit(X_untreated, y_untreated)
 
     def reset(self):
-        self.model = KNeighborsRegressor(n_neighbors=1, metric='mahalanobis')
+        self.model = KNeighborsRegressor(n_neighbors=1)
 
     def calculate_ate(self, data: pd.DataFrame):
         X_treated, y_treated, _, _ = self.preprocess_data(data)
@@ -47,7 +47,7 @@ class BaselineMatching(Model):
 
     def reset(self):
         self.model = Test_Matching(
-            metric="mahalanobis",
+            metric="euclidean",
             knn_backend="sklearn",
             n_neighbors=1
         )
