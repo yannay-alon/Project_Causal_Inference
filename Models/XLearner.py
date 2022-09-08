@@ -3,6 +3,10 @@ import pandas as pd
 from typing import List
 from causallib.estimation import Standardization, StratifiedStandardization, XLearner as Test_XLearner
 from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVC
+
+
 
 from Model import Model
 
@@ -13,9 +17,9 @@ class XLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
         super(XLearner, self).__init__(num_features, treatment_feature_name, target_feature_name)
 
-        self.propensity_model: GradientBoostingClassifier = GradientBoostingClassifier()
-        self.first_stage: List[GradientBoostingClassifier] = None
-        self.second_stage: List[GradientBoostingRegressor] = None
+        self.propensity_model: SVC = SVC(probability=True)
+        self.first_stage: List[SVC] = None
+        self.second_stage: List[LinearRegression] = None
         self.reset()
 
         self.treatment_values = [0, 1]  # Only supports binary treatments
@@ -40,15 +44,15 @@ class XLearner(Model):
 
     def reset(self):
         self.first_stage = [
-            GradientBoostingClassifier(max_depth=2),
-            GradientBoostingClassifier(max_depth=2)
+            SVC(probability=True),
+            SVC(probability=True)
         ]
 
-        self.propensity_model = GradientBoostingClassifier()
+        self.propensity_model = SVC(probability=True)
 
         self.second_stage = [
-            GradientBoostingRegressor(max_depth=2),
-            GradientBoostingRegressor(max_depth=2)
+            LinearRegression(),
+            LinearRegression()
         ]
 
     def calculate_ate(self, data: pd.DataFrame):
@@ -72,8 +76,8 @@ class BaselineXLearner(Model):
 
     def reset(self):
         self.model = Test_XLearner(
-            outcome_model=StratifiedStandardization(GradientBoostingRegressor()),
-            effect_model=Standardization(GradientBoostingRegressor()),
+            outcome_model=StratifiedStandardization(LinearRegression()),
+            effect_model=Standardization(LinearRegression()),
             effect_types="diff"
         )
 

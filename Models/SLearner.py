@@ -5,11 +5,11 @@ from sklearn.kernel_ridge import KernelRidge
 from Model import Model
 from econml.metalearners import SLearner as Test_SLearner
 from sklearn.ensemble import GradientBoostingRegressor
-
+from sklearn.linear_model import LinearRegression
 
 class SLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
-                 interacted: bool = True, model=GradientBoostingRegressor()):
+                 interacted: bool = True, model=LinearRegression()):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.model = model
         self.interacted = interacted
@@ -52,7 +52,7 @@ class BaselineSLearner(Model):
         self.model.fit(X=features, T=data[self.treatment_name], Y=data[self.target_name])
 
     def reset(self):
-        self.model = Test_SLearner(overall_model=GradientBoostingRegressor())
+        self.model = Test_SLearner(overall_model=LinearRegression())
 
     def calculate_ate(self, data: pd.DataFrame):
         features = data.drop(columns=[self.treatment_name, self.target_name])

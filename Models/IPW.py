@@ -3,6 +3,7 @@ import pandas as pd
 import sklearn.base
 from causallib.estimation import IPW as BASELINE_IPW
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.svm import SVC
 
 from Model import Model
 
@@ -11,7 +12,7 @@ class IPW(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str):
         super(IPW, self).__init__(num_features, treatment_feature_name, target_feature_name)
 
-        self.model = GradientBoostingClassifier()
+        self.model = SVC(probability=True)
 
         self.reset()
 
@@ -45,7 +46,7 @@ class BaselineIPW(Model):
         self.model.fit(features, labels)
 
     def reset(self):
-        self.model = BASELINE_IPW(GradientBoostingClassifier())
+        self.model = BASELINE_IPW(SVC(probability=True))
 
     def calculate_ate(self, data: pd.DataFrame):
         features = data.drop(columns=[self.treatment_name, self.target_name])

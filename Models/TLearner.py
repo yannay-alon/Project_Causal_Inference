@@ -1,14 +1,15 @@
 import pandas as pd
 import numpy as np
 from Model import Model
-from sklearn.linear_model import LinearRegression
 from econml.metalearners import TLearner as Test_TLearner
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+
 
 
 class TLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
-                 treated_model=GradientBoostingRegressor(), untreated_model=GradientBoostingRegressor()):
+                 treated_model=LinearRegression(), untreated_model=LinearRegression()):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.treated_model = treated_model
         self.untreated_model = untreated_model
@@ -20,8 +21,8 @@ class TLearner(Model):
         self.untreated_model.fit(X_untreated, y_untreated)
 
     def reset(self):
-        self.treated_model = GradientBoostingRegressor()
-        self.untreated_model = GradientBoostingRegressor()
+        self.treated_model = LinearRegression()
+        self.untreated_model = LinearRegression()
 
     def calculate_ate(self, data: pd.DataFrame):
         X_treated, _, _, _ = self.preprocess_data(data)
@@ -54,7 +55,7 @@ class BaselineTLearner(Model):
         self.model.fit(X=features, T=data[self.treatment_name], Y=data[self.target_name])
 
     def reset(self):
-        self.model = Test_TLearner(models=GradientBoostingRegressor())
+        self.model = Test_TLearner(models=LinearRegression())
 
     def calculate_ate(self, data: pd.DataFrame):
         features = data.drop(columns=[self.treatment_name, self.target_name])
