@@ -5,14 +5,14 @@ from Model import Model
 from causallib.estimation import PropensityFeatureStandardization, StratifiedStandardization, OverlapWeights
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.svm import SVC
-
+from sklearn.linear_model import LinearRegression
 
 
 class DoublyRobust(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
                  propensity_model=SVC(probability=True),
-                 treated_model=SVC(probability=True),
-                 controlled_model=SVC(probability=True)):
+                 treated_model=LinearRegression(),
+                 controlled_model=LinearRegression()):
         super().__init__(num_features, treatment_feature_name, target_feature_name)
         self.propensity_model = propensity_model
         self.treated_model = treated_model
@@ -58,7 +58,7 @@ class BaselineDoublyRobust(Model):
 
     def reset(self):
         self.model = PropensityFeatureStandardization(
-            outcome_model=StratifiedStandardization(SVC(probability=True)),
+            outcome_model=StratifiedStandardization(LinearRegression()),
             weight_model=OverlapWeights(SVC(probability=True))
         )
 

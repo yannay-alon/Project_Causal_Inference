@@ -6,7 +6,6 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
 
 
-
 class TLearner(Model):
     def __init__(self, num_features: int, treatment_feature_name: str, target_feature_name: str,
                  treated_model=LinearRegression(), untreated_model=LinearRegression()):

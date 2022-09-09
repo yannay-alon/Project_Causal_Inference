@@ -11,7 +11,7 @@ def main():
         DoublyRobust,
         SLearner,
         TLearner,
-        Matching
+        # Matching
     ]
 
     baseline_types = [
@@ -20,13 +20,13 @@ def main():
         BaselineDoublyRobust,
         BaselineSLearner,
         BaselineTLearner,
-        BaselineMatching
+        # BaselineMatching
     ]
 
     model_names = [model.__name__ for model in model_types]
     baseline_names = [model.__name__ for model in baseline_types]
 
-    folder = "results"
+    folder = "results_low"
     min_samples, max_samples = 700, 1900
     sample_step = 200
     num_samples_values = [num for num in range(min_samples, max_samples + 1, sample_step)]

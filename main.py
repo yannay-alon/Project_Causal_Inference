@@ -11,30 +11,30 @@ np.seterr(all='raise')
 
 def run_models(data: pd.DataFrame, ate: float,
                num_features: int, treatment_name: str, target_name: str):
-    num_samples_values = [num for num in range(700, len(data) + 1, 200)]
+    num_samples_values = [num for num in range(300, len(data) + 1, 100)]
     num_splits = 8
     num_repetitions = 10
 
-    folder = "results"
+    folder = "results_low"
     if not os.path.exists(folder):
         os.makedirs(folder)
 
     # All models to test
     model_types = [
-        IPW,
-        XLearner,
+        # IPW,
+        # XLearner,
         DoublyRobust,
-        SLearner,
-        TLearner,
+        # SLearner,
+        # TLearner,
         # Matching
     ]
 
     baseline_types = [
-        BaselineIPW,
-        BaselineXLearner,
+        # BaselineIPW,
+        # BaselineXLearner,
         BaselineDoublyRobust,
-        BaselineSLearner,
-        BaselineTLearner,
+        # BaselineSLearner,
+        # BaselineTLearner,
         # BaselineMatching
     ]
 
@@ -141,7 +141,7 @@ def run_models(data: pd.DataFrame, ate: float,
 def main():
     np.random.seed(42)
 
-    dimension = "high"
+    dimension = "low"
 
     if dimension == "low":
         folder_path = "TestDatasets_lowD"
